@@ -164,8 +164,8 @@ func (c *Config) Validate() error {
 		if !c.CSRFProtection {
 			return errors.New("CSRF_PROTECTION must be enabled in production")
 		}
-		if c.FrontendURL == "http://localhost:3000" {
-			return errors.New("FRONTEND_URL must be set to production URL")
+		if c.FrontendURL == "" || c.FrontendURL == "http://localhost:3000" {
+			return errors.New("FRONTEND_URL must be set to production URL (current: " + c.FrontendURL + ")")
 		}
 	}
 	
