@@ -109,9 +109,17 @@ func setupRouter(cfg *config.Config, authHandler *handlers.AuthHandler, tokenSer
 	router.Use(middleware.SecureHeaders())
 	router.Use(middleware.RequestBodySizeLimit(1024*1024)) // 1MB limit
 	
-	// CSRF protection for non-API routes
+	// CSRF protection for non-API routes (exclude auth routes)
 	if cfg.CSRFProtection {
-		router.Use(middleware.CSRF(redisClient))
+		router.Use(func(c *gin.Context) {
+			// Skip CSRF for public auth routes only
+			path := c.Request.URL.Path
+			if path == "/auth/login" || path == "/auth/register" || path == "/auth/password/forgot" || path == "/auth/password/reset" || path == "/auth/verify" {
+				c.Next()
+				return
+			}
+			middleware.CSRF(redisClient)(c)
+		})
 	}
 
 	// Health checks

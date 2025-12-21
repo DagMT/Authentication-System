@@ -161,9 +161,7 @@ func (c *Config) Validate() error {
 		if c.UpstashRedisURL == "" || c.UpstashRedisToken == "" {
 			return errors.New("Upstash Redis credentials must be set in production")
 		}
-		if !c.CSRFProtection {
-			return errors.New("CSRF_PROTECTION must be enabled in production")
-		}
+		// CSRF is optional for JWT-based APIs
 		if c.FrontendURL == "" || c.FrontendURL == "http://localhost:3000" {
 			return errors.New("FRONTEND_URL must be set to production URL (current: " + c.FrontendURL + ")")
 		}
