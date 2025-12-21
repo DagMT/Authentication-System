@@ -16,6 +16,7 @@ import (
 	"github.com/Flack74/go-auth-system/internal/middleware"
 	"github.com/Flack74/go-auth-system/internal/repository"
 	"github.com/Flack74/go-auth-system/internal/services"
+	"github.com/Flack74/go-auth-system/internal/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
@@ -55,7 +56,7 @@ func main() {
 	authService := services.NewAuthService(userRepo, tokenService, emailService, cfg)
 
 	// Initialize handlers
-	authHandler := handlers.NewAuthHandler(authService)
+	authHandler := handlers.NewAuthHandler(authService, cfg)
 
 	// Setup routes
 	router := setupRouter(cfg, authHandler, tokenService, redisClient, db)
@@ -95,16 +96,18 @@ func main() {
 func setupRouter(cfg *config.Config, authHandler *handlers.AuthHandler, tokenService *services.TokenService, redisClient *redis.Client, db *sql.DB) *gin.Engine {
 	router := gin.Default()
 
+	// Initialize logger
+	logger := utils.NewLogger()
+
 	// Global middleware
 	router.Use(middleware.CorrelationID())
-	router.Use(middleware.StructuredLogging())
-	router.Use(middleware.RequestTimeout())
+	router.Use(middleware.StructuredLogging(logger))
 	router.Use(middleware.ErrorHandler())
 	router.Use(middleware.ValidationErrorHandler())
-	router.Use(middleware.InputValidation())
+	router.Use(middleware.InputSanitization())
 	router.Use(middleware.CORS())
 	router.Use(middleware.SecureHeaders())
-	router.Use(middleware.RequestSizeLimit(1024*1024)) // 1MB limit
+	router.Use(middleware.RequestBodySizeLimit(1024*1024)) // 1MB limit
 	
 	// CSRF protection for non-API routes
 	if cfg.CSRFProtection {
@@ -137,6 +140,8 @@ func setupRouter(cfg *config.Config, authHandler *handlers.AuthHandler, tokenSer
 	protected.Use(middleware.Auth(tokenService))
 	{
 		protected.GET("/profile", authHandler.GetProfile)
+		protected.POST("/2fa/toggle", authHandler.Toggle2FA)
+		protected.GET("/activity-log", authHandler.GetActivityLog)
 	}
 
 	return router

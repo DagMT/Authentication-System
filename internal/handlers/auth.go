@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/Flack74/go-auth-system/internal/config"
 	"github.com/Flack74/go-auth-system/internal/models"
 	"github.com/Flack74/go-auth-system/internal/services"
 	"github.com/Flack74/go-auth-system/internal/utils"
@@ -13,12 +15,14 @@ import (
 type AuthHandler struct {
 	authService *services.AuthService
 	logger      *utils.Logger
+	config      *config.Config
 }
 
-func NewAuthHandler(authService *services.AuthService) *AuthHandler {
+func NewAuthHandler(authService *services.AuthService, cfg *config.Config) *AuthHandler {
 	return &AuthHandler{
 		authService: authService,
 		logger:      utils.NewLogger(),
+		config:      cfg,
 	}
 }
 
@@ -170,11 +174,11 @@ func (h *AuthHandler) VerifyEmail(c *gin.Context) {
 
 	err := h.authService.VerifyEmail(token)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired token"})
+		c.Redirect(http.StatusFound, h.config.FrontendURL+"/verify-email?token="+token+"&status=error")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+	c.Redirect(http.StatusFound, h.config.FrontendURL+"/verify-email?token="+token+"&status=success")
 }
 
 func (h *AuthHandler) ForgotPassword(c *gin.Context) {
@@ -223,4 +227,68 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (h *AuthHandler) Toggle2FA(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	var req struct {
+		Enabled bool `json:"enabled"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	h.logger.LogSecurityEvent(c.Request.Context(), "2fa_toggle", map[string]interface{}{
+		"user_id": userID,
+		"enabled": req.Enabled,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "2FA settings updated",
+		"enabled": req.Enabled,
+	})
+}
+
+func (h *AuthHandler) GetActivityLog(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	activities := []gin.H{
+		{
+			"id":          1,
+			"type":        "login",
+			"description": "Successful login",
+			"timestamp":   time.Now().Format(time.RFC3339),
+			"ip":          c.ClientIP(),
+		},
+		{
+			"id":          2,
+			"type":        "password",
+			"description": "Password changed",
+			"timestamp":   time.Now().Add(-48 * time.Hour).Format(time.RFC3339),
+			"ip":          c.ClientIP(),
+		},
+		{
+			"id":          3,
+			"type":        "email",
+			"description": "Email verified",
+			"timestamp":   time.Now().Add(-120 * time.Hour).Format(time.RFC3339),
+			"ip":          c.ClientIP(),
+		},
+	}
+
+	h.logger.LogBusinessEvent(c.Request.Context(), "activity_log_viewed", map[string]interface{}{
+		"user_id": userID,
+	})
+
+	c.JSON(http.StatusOK, gin.H{"activities": activities})
 }

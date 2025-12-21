@@ -1,0 +1,64 @@
+services:
+  # Backend Service
+  - type: web
+    name: go-auth-backend
+    env: docker
+    dockerfilePath: ./docker/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: ENV
+        value: production
+      - key: NEON_DATABASE_URL
+        sync: false
+      - key: UPSTASH_REDIS_URL
+        sync: false
+      - key: UPSTASH_REDIS_TOKEN
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRY
+        value: 15m
+      - key: JWT_REFRESH_EXPIRY
+        value: 7d
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: BCRYPT_COST
+        value: 12
+      - key: RATE_LIMIT_REQUESTS
+        value: 10
+      - key: RATE_LIMIT_WINDOW
+        value: 1m
+      - key: SESSION_TIMEOUT
+        value: 30m
+      - key: ACCOUNT_LOCKOUT_DURATION
+        value: 30m
+      - key: MAX_FAILED_ATTEMPTS
+        value: 5
+      - key: PASSWORD_COMPLEXITY
+        value: true
+      - key: CSRF_PROTECTION
+        value: true
+      - key: REQUEST_TIMEOUT
+        value: 30s
+
+  # Frontend Service
+  - type: web
+    name: go-auth-frontend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: VITE_API_URL
+        sync: false

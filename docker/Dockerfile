@@ -22,6 +22,10 @@ WORKDIR /root/
 # Copy the binary from builder stage
 COPY --from=builder /app/main .
 
+# Copy keep-alive script
+COPY scripts/keep-alive.sh /usr/local/bin/keep-alive.sh
+RUN chmod +x /usr/local/bin/keep-alive.sh
+
 # Expose port
 EXPOSE 8080
 
@@ -29,5 +33,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 -O /dev/null http://localhost:8080/health || exit 1
 
-# Run the binary
-CMD ["./main"]
+# Start both the main app and keep-alive script
+CMD /usr/local/bin/keep-alive.sh & ./main

@@ -2,67 +2,91 @@ package utils
 
 import (
 	"context"
+	"os"
+	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/google/uuid"
 )
 
 type Logger struct {
 	*logrus.Logger
 }
 
+type contextKey string
+
+const CorrelationIDKey contextKey = "correlation_id"
+
 func NewLogger() *Logger {
-	log := logrus.New()
-	log.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02T15:04:05.000Z",
+	logger := logrus.New()
+	
+	// JSON format for production
+	logger.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat: time.RFC3339,
+		FieldMap: logrus.FieldMap{
+			logrus.FieldKeyTime:  "timestamp",
+			logrus.FieldKeyLevel: "level",
+			logrus.FieldKeyMsg:   "message",
+		},
 	})
-	return &Logger{log}
+
+	// Set log level based on environment
+	if os.Getenv("ENV") == "development" {
+		logger.SetLevel(logrus.DebugLevel)
+	} else {
+		logger.SetLevel(logrus.InfoLevel)
+	}
+
+	return &Logger{logger}
 }
 
 func (l *Logger) WithCorrelationID(ctx context.Context) *logrus.Entry {
-	correlationID := ctx.Value("correlation_id")
-	if correlationID == nil {
-		correlationID = "unknown"
-	}
+	correlationID := GetCorrelationID(ctx)
 	return l.WithField("correlation_id", correlationID)
 }
 
-func (l *Logger) LogAuthEvent(ctx context.Context, event string, email string, success bool) {
-	entry := l.WithCorrelationID(ctx).WithFields(logrus.Fields{
+func (l *Logger) LogAuthEvent(ctx context.Context, event, email string, success bool) {
+	l.WithCorrelationID(ctx).WithFields(logrus.Fields{
 		"event":   event,
 		"email":   email,
 		"success": success,
-		"type":    "auth_event",
-	})
-	
-	if success {
-		entry.Info("Authentication event")
-	} else {
-		entry.Warn("Authentication failed")
-	}
+		"type":    "auth",
+	}).Info("Authentication event")
 }
 
-func (l *Logger) LogSecurityEvent(ctx context.Context, event string, details map[string]interface{}) {
+func (l *Logger) LogSecurityEvent(ctx context.Context, event string, data map[string]interface{}) {
 	entry := l.WithCorrelationID(ctx).WithFields(logrus.Fields{
 		"event": event,
-		"type":  "security_event",
+		"type":  "security",
 	})
 	
-	for key, value := range details {
-		entry = entry.WithField(key, value)
+	for k, v := range data {
+		entry = entry.WithField(k, v)
 	}
 	
-	entry.Warn("Security event detected")
+	entry.Warn("Security event")
 }
 
-func (l *Logger) LogBusinessEvent(ctx context.Context, event string, details map[string]interface{}) {
+func (l *Logger) LogBusinessEvent(ctx context.Context, event string, data map[string]interface{}) {
 	entry := l.WithCorrelationID(ctx).WithFields(logrus.Fields{
 		"event": event,
-		"type":  "business_event",
+		"type":  "business",
 	})
 	
-	for key, value := range details {
-		entry = entry.WithField(key, value)
+	for k, v := range data {
+		entry = entry.WithField(k, v)
 	}
 	
 	entry.Info("Business event")
+}
+
+func GetCorrelationID(ctx context.Context) string {
+	if id, ok := ctx.Value(CorrelationIDKey).(string); ok {
+		return id
+	}
+	return uuid.New().String()
+}
+
+func SetCorrelationID(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, CorrelationIDKey, id)
 }

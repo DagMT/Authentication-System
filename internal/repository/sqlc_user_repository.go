@@ -40,9 +40,6 @@ func (r *SqlcUserRepository) GetByEmail(email string) (*models.User, error) {
 	
 	dbUser, err := r.queries.GetUserByEmail(ctx, email)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
 	
@@ -71,9 +68,6 @@ func (r *SqlcUserRepository) GetByID(id string) (*models.User, error) {
 	
 	dbUser, err := r.queries.GetUserByID(ctx, userID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
 	
@@ -139,9 +133,6 @@ func (r *SqlcUserRepository) GetByPasswordResetToken(token string) (*models.User
 	
 	dbUser, err := r.queries.GetUserByPasswordResetToken(ctx, sql.NullString{String: token, Valid: true})
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
 		return nil, err
 	}
 	

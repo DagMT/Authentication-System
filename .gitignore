@@ -19,6 +19,12 @@ go.work
 
 # Environment variables
 .env
+.env.local
+.env.*.local
+
+# Keep template files
+!.env.example
+!.env.render
 
 # IDE files
 .vscode/
@@ -40,17 +46,11 @@ Thumbs.db
 
 # Database
 *.db
-*.sqlite
 
 # Build artifacts
 /bin/
 /dist/
 
-# Documentation
-ENDPOINTS_STATUS.md
-IMPLEMENTATION_GUIDE.md
-ARCHITECTURE.md
-DEVELOPMENT_GUIDE.md
 
 # Text file
 email_verify_token.txt
@@ -58,8 +58,8 @@ email_verify_token.txt
 # Make file
 Makefile
 
+# Documentation
+documentation
+
 # Scripts
-inspect_auth.sh 
-test_endpoints.sh
-
-
+scripts

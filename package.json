@@ -1,0 +1,15 @@
+{
+  "name": "backend-keep-alive",
+  "version": "1.0.0",
+  "description": "Keep backend alive by pinging health endpoint",
+  "scripts": {
+    "ping": "node ping.js",
+    "keep-alive": "node keep-alive.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "keywords": ["keep-alive", "ping", "health-check"],
+  "author": "Flack",
+  "license": "MIT"
+}
