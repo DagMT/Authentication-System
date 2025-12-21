@@ -1,57 +1,140 @@
+<div align="center">
+
 # 🔐 Go Authentication System
 
-Production-ready authentication system built with Go 1.22+, PostgreSQL (Neon), Redis (Upstash), and modern security features.
+### Enterprise-Grade Authentication Built with Go 1.22+
+
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?style=for-the-badge&logo=go)](https://go.dev/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![Render](https://img.shields.io/badge/Render-Deploy-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
+
+**Production-ready authentication system with PostgreSQL (Neon), Redis (Upstash), and modern security features**
+
+[🚀 Quick Start](#-quick-deploy) • [📖 Documentation](#-documentation) • [✨ Features](#-features) • [🔒 Security](#-security-features)
+
+</div>
+
+---
 
 ## 🚀 Quick Deploy
 
-### Vercel (Frontend) + Render (Backend)
-```bash
-# Quick deploy script
-./deploy-vercel.sh
+<table>
+<tr>
+<td width="50%">
 
-# Or follow the guide
-See: VERCEL_RENDER_DEPLOY.md
+### 🎨 Frontend (Vercel)
+```bash
+cd frontend
+vercel --prod
 ```
 
-### Local Testing (Docker Compose)
+</td>
+<td width="50%">
+
+### ⚙️ Backend (Render)
+1. Create Web Service on Render
+2. Set Dockerfile: `./docker/Dockerfile`
+3. Add environment variables
+4. Deploy!
+
+</td>
+</tr>
+</table>
+
+### 🐳 Local Development
+
 ```bash
 # Production mode (Neon + Upstash)
-./scripts/deploy.sh
+docker-compose up -d
 
-# Development mode (Local PostgreSQL + Redis)
-./scripts/deploy.sh dev
+# Development mode (Local DB)
+docker-compose --profile dev up -d
 ```
 
-### Render Deployment (Backend Only)
+---
 
-#### Backend Deployment
-1. Create new **Web Service** on Render
-2. Connect your repository
-3. Configure:
-   - **Environment**: Docker
-   - **Dockerfile Path**: `./docker/Dockerfile`
-   - **Docker Context**: `.`
-4. Add environment variables from `.env.render`:
-   ```
-   NEON_DATABASE_URL=postgresql://...
-   UPSTASH_REDIS_URL=host:6379
-   UPSTASH_REDIS_TOKEN=your_token
-   JWT_SECRET=<use: openssl rand -base64 32>
-   FRONTEND_URL=https://your-app.vercel.app
-   SMTP_USER=your_email
-   SMTP_PASS=your_password
-   EMAIL_FROM=your_email
-   ENV=production
-   CSRF_PROTECTION=true
-   ```
-5. Deploy!
+## ✨ Features
 
-#### Run Migrations
-```bash
-migrate -path migrations \
-  -database "$NEON_DATABASE_URL" \
-  up
-```
+<table>
+<tr>
+<td width="50%">
+
+### 🔐 Authentication
+- ✅ JWT + Refresh Tokens
+- ✅ Email Verification
+- ✅ Password Reset Flow
+- ✅ Session Management
+- ✅ 2FA Support
+
+</td>
+<td width="50%">
+
+### 🛡️ Security
+- ✅ Rate Limiting (IP + User)
+- ✅ Account Lockout (5 attempts)
+- ✅ CSRF Protection
+- ✅ XSS Protection
+- ✅ SQL Injection Prevention
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 📊 Infrastructure
+- ✅ Health Checks
+- ✅ Structured Logging
+- ✅ Docker Ready
+- ✅ Auto-scaling
+
+</td>
+<td width="50%">
+
+### 🚀 Deployment
+- ✅ Vercel (Frontend)
+- ✅ Render (Backend)
+- ✅ Neon PostgreSQL
+- ✅ Upstash Redis
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🏗️ Tech Stack
+
+<div align="center">
+
+| Layer | Technology | Purpose |
+|:------|:-----------|:--------|
+| **Backend** | ![Go](https://img.shields.io/badge/Go_1.22+-00ADD8?style=flat&logo=go&logoColor=white) ![Gin](https://img.shields.io/badge/Gin-00ADD8?style=flat) | HTTP Framework |
+| **Database** | ![PostgreSQL](https://img.shields.io/badge/Neon_PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white) | Serverless Database |
+| **Cache** | ![Redis](https://img.shields.io/badge/Upstash_Redis-DC382D?style=flat&logo=redis&logoColor=white) | Session & Rate Limiting |
+| **Frontend** | ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | UI Framework |
+| **SQL** | ![sqlc](https://img.shields.io/badge/sqlc-000000?style=flat) | Type-safe Queries |
+| **Deploy** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel) ![Render](https://img.shields.io/badge/Render-46E3B7?style=flat&logo=render&logoColor=white) | Containerization & Hosting |
+
+</div>
+
+---
+
+## 🔒 Security Features
+
+- **🔐 Password Security**: bcrypt hashing (cost 12+)
+- **🎫 JWT Authentication**: Short-lived access tokens (15min)
+- **🔄 Token Rotation**: Automatic refresh token rotation
+- **⏱️ Rate Limiting**: Per IP and per user protection
+- **🔒 Account Lockout**: 5 failed attempts = 30min lockout
+- **🛡️ CSRF Protection**: Token validation on state-changing operations
+- **🔰 Security Headers**: HSTS, CSP, X-Frame-Options, etc.
+- **✅ Input Validation**: Sanitization and validation on all inputs
+- **🚫 SQL Injection**: Prevention via sqlc type-safe queries
+- **🔐 TLS**: Encrypted connections to all external services
+
+---
 
 ## 📁 Project Structure
 
@@ -59,7 +142,7 @@ migrate -path migrations \
 .
 ├── cmd/api/              # Application entry point
 ├── internal/             # Private application code
-│   ├── config/          # Consleep 5 && docker-compose logs --tail=10 backendfiguration
+│   ├── config/          # Configuration
 │   ├── databases/       # DB connections (Neon/Upstash)
 │   ├── handlers/        # HTTP handlers
 │   ├── middleware/      # Middleware
@@ -69,108 +152,68 @@ migrate -path migrations \
 │   └── utils/           # Utilities
 ├── frontend/            # React frontend
 │   ├── src/
-│   ├── Dockerfile       # Frontend Docker (Render)
-│   └── .env.render      # Frontend env template
+│   └── Dockerfile       # Frontend Docker
 ├── migrations/          # Database migrations
 ├── docker/
-│   └── Dockerfile       # Backend Docker (Render)
-├── documentation/       # All .md files
-├── scripts/            # All .sh scripts
-├── docker-compose.yml  # Local testing
-├── .env                # Local config
-├── .env.render         # Render backend template
-└── render.yaml         # Render blueprint
+│   └── Dockerfile       # Backend Docker
+├── docker-compose.yml   # Local testing
+└── vercel.json          # Vercel config
 ```
+
+---
 
 ## 🗄️ Database & Cache
 
-### Neon PostgreSQL (Production)
+<table>
+<tr>
+<td width="50%">
+
+### 🐘 Neon PostgreSQL
 - Serverless PostgreSQL
 - Auto-scaling
 - Connection pooling
 - Set via `NEON_DATABASE_URL`
 
-### Upstash Redis (Production)
+</td>
+<td width="50%">
+
+### ⚡ Upstash Redis
 - Serverless Redis
 - TLS enabled
 - Global replication
-- Set via `UPSTASH_REDIS_URL` + `UPSTASH_REDIS_TOKEN`
+- Set via `UPSTASH_REDIS_URL`
 
-### Local Development
-- Docker Compose with local PostgreSQL + Redis
-- Use `./scripts/deploy.sh dev`
+</td>
+</tr>
+</table>
+
+---
 
 ## 📚 Documentation
 
-### Deployment Guides
-- **[Vercel + Render](VERCEL_RENDER_DEPLOY.md)** - Deploy frontend to Vercel, backend to Render
-- **[Quick Deploy](DEPLOY_QUICK.md)** - Quick reference card
-- **[Security Checklist](SECURITY_CHECKLIST.md)** - Pre-deployment security audit
-- **[Production Ready](PRODUCTION_READY.md)** - Final deployment checklist
+<table>
+<tr>
+<td width="50%">
 
-### Development Guides
-- [START HERE](documentation/START_HERE.md) - New to the project?
-- [Setup Guide](documentation/SETUP_GUIDE.md) - Complete setup
-- [API Documentation](documentation/API_DOCUMENTATION.md) - API endpoints
-- [Architecture](documentation/ARCHITECTURE.md) - System design
-- [Development Guide](documentation/DEVELOPMENT_GUIDE.md) - Development workflow
-- [Testing Guide](documentation/TESTING_GUIDE.md) - Testing
+### 🚀 Deployment
+- Vercel + Render deployment guide
+- Quick deploy reference
+- Security checklist
+- Production ready guide
 
-## 🛠️ Scripts
+</td>
+<td width="50%">
 
-### Deployment
-- `./deploy-vercel.sh` - Deploy to Vercel + Render
-- `./pre-deploy-check.sh` - Security check before deployment
+### 🔧 Keep-Alive
+- `npm run ping` - Health check
+- `npm run keep-alive` - Auto-ping (10min)
+- Keep-alive documentation
 
-### Development
-- `scripts/deploy.sh` - Deploy locally (prod/dev)
-- `scripts/check_setup.sh` - Verify setup
-- `scripts/test_endpoints.sh` - Test API
-- `scripts/manage_users.sh` - User management
+</td>
+</tr>
+</table>
 
-### Keep-Alive
-- `npm run ping` - Single health check
-- `npm run keep-alive` - Continuous pinging (10min interval)
-
-## ✨ Features
-
-- ✅ JWT + Refresh Token Authentication
-- ✅ Email Verification
-- ✅ Password Reset Flow
-- ✅ Rate Limiting (IP + User based)
-- ✅ Account Lockout (5 failed attempts)
-- ✅ CSRF Protection
-- ✅ XSS Protection
-- ✅ SQL Injection Prevention (sqlc)
-- ✅ Secure Password Hashing (bcrypt)
-- ✅ Health Checks
-- ✅ Structured Logging
-- ✅ Docker Ready
-- ✅ Render Ready
-
-## 🏗️ Tech Stack
-
-| Component | Technology | Purpose |
-|-----------|------------|----------|
-| Backend | Go 1.22+ + Gin | HTTP framework |
-| Database | PostgreSQL (Neon) | Data storage |
-| Cache | Redis (Upstash) | Session + rate limiting |
-| Frontend | React + TypeScript + Vite | UI |
-| SQL | sqlc | Type-safe queries |
-| Deployment | Docker + Vercel + Render | Containerization & hosting |
-
-## 🔒 Security Features
-
-- bcrypt password hashing (cost 12+)
-- JWT with short-lived access tokens (15min)
-- Refresh token rotation
-- Rate limiting per IP and user
-- Account lockout after failed attempts
-- CSRF token validation
-- Security headers (HSTS, CSP, etc.)
-- Input validation and sanitization
-- SQL injection prevention (sqlc)
-- TLS for external services
+---
 
 ## 🚦 Environment Variables
 
@@ -198,40 +241,43 @@ VITE_API_URL=https://your-backend.onrender.com
 openssl rand -base64 32
 ```
 
+---
+
 ## 📊 Deployment Options
 
-### Option 1: Vercel + Render (Recommended)
+### 🥇 Option 1: Vercel + Render (Recommended)
 
-**Frontend (Vercel)**:
-- Automatic CDN
-- Zero config
-- Free SSL
-- Deploy: `vercel`
+<table>
+<tr>
+<td width="50%" align="center">
 
-**Backend (Render)**:
-- Docker deployment
-- Auto-scaling
-- Free SSL
-- Health checks
+**Frontend (Vercel)**
 
+✅ Automatic CDN  
+✅ Zero Config  
+✅ Free SSL  
+✅ Edge Network  
 
-### Option 2: Render Only (Both Services)
+`vercel --prod`
 
-**Backend**: Web Service (Docker)
-- Uses `docker/Dockerfile`
-- Requires Neon PostgreSQL and Upstash Redis
-- Set environment variables from `.env.render`
+</td>
+<td width="50%" align="center">
 
-**Frontend**: Static Site (Recommended) or Web Service
-- **Static Site**: No Docker, Render serves built files directly (free tier available)
-- **Web Service**: Uses `frontend/Dockerfile` with nginx (more control, costs more)
-- Both options work; Static Site is simpler for most use cases
+**Backend (Render)**
 
-**External Services**:
-- Database: Neon PostgreSQL
-- Cache: Upstash Redis
+✅ Docker Deploy  
+✅ Auto-scaling  
+✅ Free SSL  
+✅ Health Checks  
 
-### Option 3: Docker Compose (Local Testing)
+[Deploy Now →](https://render.com)
+
+</td>
+</tr>
+</table>
+
+### 🥈 Option 2: Docker Compose (Local)
+
 ```bash
 # Production mode
 docker-compose up -d
@@ -240,30 +286,19 @@ docker-compose up -d
 docker-compose --profile dev up -d
 ```
 
-### Option 4: Manual Docker
+### 🥉 Option 3: Manual Docker
+
 ```bash
 # Backend
 docker build -f docker/Dockerfile -t backend .
-docker run -p 8080:8080 --env-file .env.render backend
+docker run -p 8080:8080 --env-file .env backend
 
 # Frontend
-cd frontend
-docker build -t frontend .
+cd frontend && docker build -t frontend .
 docker run -p 3000:80 frontend
 ```
 
-## 🧪 Testing
-
-```bash
-# Test all endpoints
-./scripts/test_endpoints.sh
-
-# Check health
-curl http://localhost:8080/health
-
-# Run Go tests
-go test -v ./...
-```
+---
 
 ## 📈 Monitoring
 
@@ -283,26 +318,44 @@ go test -v ./...
 }
 ```
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/name`
-3. Commit changes: `git commit -am 'Add feature'`
-4. Push to branch: `git push origin feature/name`
-5. Submit pull request
+## 🆘 Support & Contributing
 
-## 📄 License
+<div align="center">
 
-MIT License - see LICENSE file
+### 💬 Get Help
 
-## 🆘 Support
+[![GitHub Issues](https://img.shields.io/github/issues/Flack74/Authentication-System?style=for-the-badge)](https://github.com/Flack74/Authentication-System/issues)
+[![Email](https://img.shields.io/badge/Email-flack74621%40gmail.com-red?style=for-the-badge&logo=gmail)](mailto:flack74621@gmail.com)
 
-- **GitHub**: [Issues](https://github.com/Flack74/Authentication-System/issues)
-- **Documentation**: See guides above
-- **Email**: flack74621@gmail.com
+### 🤝 Contributing
+
+1. 🍴 Fork the repository
+2. 🌿 Create feature branch: `git checkout -b feature/name`
+3. 💾 Commit changes: `git commit -am 'Add feature'`
+4. 📤 Push to branch: `git push origin feature/name`
+5. 🔀 Submit pull request
+
+### 📄 License
+
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
+
+<div align="center">
+
+### ⭐ Star this repo if you find it helpful!
+
+[![GitHub stars](https://img.shields.io/github/stars/Flack74/Authentication-System?style=social)](https://github.com/Flack74/Authentication-System/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Flack74/Authentication-System?style=social)](https://github.com/Flack74/Authentication-System/network/members)
 
 **Status**: ✅ Production Ready | 🚀 Vercel + Render Ready | 🔒 Security Hardened
 
 Built with ❤️ by [Flack](https://github.com/Flack74)
+
+</div>
+
+</div>
