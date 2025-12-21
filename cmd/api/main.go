@@ -116,6 +116,13 @@ func setupRouter(cfg *config.Config, authHandler *handlers.AuthHandler, tokenSer
 
 	// Health checks
 	healthHandler := handlers.NewHealthHandler(db, redisClient)
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"service": "Go Authentication System",
+			"version": "1.0.0",
+			"status":  "running",
+		})
+	})
 	router.GET("/health", healthHandler.HealthCheck)
 	router.GET("/health/ready", healthHandler.ReadinessCheck)
 	router.GET("/health/live", healthHandler.LivenessCheck)
