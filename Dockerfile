@@ -24,7 +24,7 @@ COPY --from=builder /app/main .
 
 # Copy keep-alive script
 COPY scripts/keep-alive.sh /usr/local/bin/keep-alive.sh
-RUN chmod +x /usr/local/bin/keep-alive.sh
+RUN chmod +x /usr/local/bin/keep-alive.sh 
 
 # Expose port
 EXPOSE 8080
